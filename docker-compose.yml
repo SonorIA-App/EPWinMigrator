@@ -1,0 +1,22 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: epwin-migrator-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: epwin
+      MYSQL_DATABASE: epwin
+      MYSQL_USER: epwin
+      MYSQL_PASSWORD: epwin
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pepwin"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+volumes:
+  mysql_data:
