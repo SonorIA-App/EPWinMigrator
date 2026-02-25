@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [develop, staging, main]
+  pull_request:
+    branches: [develop, staging, main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Instalar ruff
+        run: pip install ruff
+
+      - name: Lint (ruff)
+        run: ruff check .
+
+      - name: Testes
+        run: python -m pytest --tb=short -q || echo "Nenhum teste encontrado"

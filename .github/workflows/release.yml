@@ -1,0 +1,40 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Empacotar e publicar release
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Criar pacote ZIP
+        run: |
+          mkdir -p dist
+          zip -r dist/EPWinMigrator-${{ github.ref_name }}.zip . \
+            --exclude "*.git*" \
+            --exclude "dist/*" \
+            --exclude "__pycache__/*" \
+            --exclude "*.pyc" \
+            --exclude ".venv/*"
+
+      - name: Criar GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: EPWinMigrator ${{ github.ref_name }}
+          generate_release_notes: true
+          files: dist/EPWinMigrator-${{ github.ref_name }}.zip
